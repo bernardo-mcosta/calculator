@@ -1,4 +1,6 @@
 function calculate(op, a, b) {
+  a = parseFloat(a);
+  b = parseFloat(b);
   switch (op) {
     case "+":
       return a + b;
@@ -6,7 +8,7 @@ function calculate(op, a, b) {
     case "-":
       return a - b;
       break;
-    case "*":
+    case "x":
       return a * b;
       break;
     case "/":
@@ -17,9 +19,11 @@ function calculate(op, a, b) {
 
 let displayValue = 0;
 let shouldReset = false;
+let shouldClear = false;
 let firstOperand;
 let secondOperand;
 let operation;
+let result;
 
 const numberButtons = document.querySelectorAll(".number-input");
 const operatorButtons = document.querySelectorAll(".operator-input");
@@ -33,12 +37,27 @@ function resetDisplay() {
   displayValue = "";
 }
 
+function clear() {
+  // Erases all operands and return the display to the initial state
+  firstOperand = null;
+  secondOperand = null;
+  operation = null;
+  displayValue = 0;
+  displayUpper.textContent = "";
+  displayLower.textContent = displayValue;
+}
+
 numberButtons.forEach((button) =>
   button.addEventListener("click", () => {
+    if (shouldClear) {
+      clear();
+      shouldClear = false;
+    }
     if (displayValue === 0 || shouldReset) {
       resetDisplay();
       shouldReset = false;
     }
+
     displayValue += button.textContent;
     displayLower.textContent = displayValue;
   })
@@ -49,25 +68,26 @@ operatorButtons.forEach((button) =>
     if (!firstOperand || !operation) {
       operation = button.textContent;
       firstOperand = displayValue;
-      displayUpper.textContent = displayValue + operation;
+      displayUpper.textContent = displayValue + " " + operation + " ";
       shouldReset = true;
     }
-
-    console.log(firstOperand);
-    console.log(secondOperand);
-    console.log(operation);
   })
 );
 
-clearButton.addEventListener("click", () => {
-  // Erases all operands and return the display to the initial state
-  firstOperand = null;
-  secondOperand = null;
-  operation = null;
-  displayValue = 0;
-  displayUpper.textContent = "";
+equalButton.addEventListener("click", () => {
+  if (!secondOperand) {
+    secondOperand = displayValue;
+  }
+  result = calculate(operation, firstOperand, secondOperand);
+  displayValue = result;
   displayLower.textContent = displayValue;
+  displayUpper.textContent =
+    firstOperand + " " + operation + " " + secondOperand + " =";
+  firstOperand = result;
+  shouldClear = true;
 });
+
+clearButton.addEventListener("click", () => clear());
 
 deleteButton.addEventListener("click", () => {
   // Removes one digit an updates the display
