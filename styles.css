@@ -45,3 +45,7 @@ body {
 #equal {
   grid-column: 3 / span 2;
 }
+
+#AC {
+  grid-column: 1 / span 2;
+}
