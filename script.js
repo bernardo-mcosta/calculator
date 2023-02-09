@@ -46,13 +46,22 @@ numberButtons.forEach((button) =>
 
 operatorButtons.forEach((button) =>
   button.addEventListener("click", () => {
+    if (firstOperand || operation) {
+      secondOperand = displayValue;
+      result = calculate(operation, firstOperand, secondOperand);
+      displayValue = result;
+      operation = button.textContent;
+      displayLower.textContent = displayValue;
+      displayUpper.textContent = displayValue + " " + operation;
+      firstOperand = result;
+      secondOperand = null;
+      shouldReset = true;
+    }
     if (!firstOperand || !operation) {
       operation = button.textContent;
       firstOperand = displayValue;
       displayUpper.textContent = displayValue + " " + operation + " ";
       shouldReset = true;
-    }
-    if (firstOperand || operation) {
     }
   })
 );
