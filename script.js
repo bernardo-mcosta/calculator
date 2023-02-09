@@ -1,22 +1,3 @@
-function calculate(op, a, b) {
-  a = parseFloat(a);
-  b = parseFloat(b);
-  switch (op) {
-    case "+":
-      return a + b;
-      break;
-    case "-":
-      return a - b;
-      break;
-    case "x":
-      return a * b;
-      break;
-    case "/":
-      return a / b;
-      break;
-  }
-}
-
 let displayValue = 0;
 let shouldReset = false;
 let shouldClear = false;
@@ -34,6 +15,7 @@ const displayLower = document.querySelector(".screen-lower");
 const displayUpper = document.querySelector(".screen-upper");
 
 function resetDisplay() {
+  // Clear the display before inputing numbers
   displayValue = "";
 }
 
@@ -57,7 +39,6 @@ numberButtons.forEach((button) =>
       resetDisplay();
       shouldReset = false;
     }
-
     displayValue += button.textContent;
     displayLower.textContent = displayValue;
   })
@@ -71,20 +52,28 @@ operatorButtons.forEach((button) =>
       displayUpper.textContent = displayValue + " " + operation + " ";
       shouldReset = true;
     }
+    if (firstOperand || operation) {
+    }
   })
 );
 
 equalButton.addEventListener("click", () => {
-  if (!secondOperand) {
-    secondOperand = displayValue;
+  if (!operation) {
+    firstOperand = displayValue;
+    displayUpper.textContent = firstOperand + " " + " =";
+    shouldReset = true;
   }
-  result = calculate(operation, firstOperand, secondOperand);
-  displayValue = result;
-  displayLower.textContent = displayValue;
-  displayUpper.textContent =
-    firstOperand + " " + operation + " " + secondOperand + " =";
-  firstOperand = result;
-  shouldClear = true;
+  if (operation) {
+    if (!secondOperand) {
+      secondOperand = displayValue;
+    }
+    result = calculate(operation, firstOperand, secondOperand);
+    displayValue = result;
+    displayLower.textContent = displayValue;
+    displayUpper.textContent =
+      firstOperand + " " + operation + " " + secondOperand + " =";
+    firstOperand = result;
+  }
 });
 
 clearButton.addEventListener("click", () => clear());
@@ -94,3 +83,36 @@ deleteButton.addEventListener("click", () => {
   displayValue = Math.floor(displayValue / 10);
   displayLower.textContent = displayValue;
 });
+
+const help = document.querySelector("#help");
+help.addEventListener("click", () => {
+  console.log("operation: ", operation);
+  console.log("first Operand: ", firstOperand);
+  console.log("second Operand: ", secondOperand);
+});
+
+function calculate(op, a, b) {
+  a = parseFloat(a);
+  b = parseFloat(b);
+  switch (op) {
+    case "+":
+      return a + b;
+      break;
+    case "-":
+      return a - b;
+      break;
+    case "x":
+      return a * b;
+      break;
+    case "÷":
+      console.log(a);
+      console.log(b === 0);
+      console.log(a / b);
+      if (b === 0) {
+        shouldClear = true;
+        return (displayLower.textContent = "Can't divide by zero");
+      }
+      return a / b;
+      break;
+  }
+}
