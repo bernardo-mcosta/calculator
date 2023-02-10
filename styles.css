@@ -5,16 +5,20 @@
 
 body {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  height: 90vh;
 }
 
 .calculator {
-  height: 650px;
+  height: 100%;
   width: 350px;
   border: 1px solid black;
   background-color: #212120;
   padding: 0.5rem;
+  border-radius: 2%;
+  margin-top: 5%;
 }
 
 .screen-upper {
@@ -39,7 +43,7 @@ body {
   grid-template-columns: repeat(4, 1fr);
   gap: 0.15em;
   grid-template-rows: auto;
-  height: 80%;
+  height: 400px;
 }
 #equal {
   grid-column: 3 / span 2;
@@ -86,4 +90,26 @@ body {
 
 #equal {
   background-color: #858281;
+}
+#equal:hover {
+  background-color: #726f6e;
+}
+#equal:active {
+  background-color: #5e5b5a;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-style: italic;
+  height: 3em;
+  color: #212120;
+  margin-top: 5%;
+}
+
+.footer-icon {
+  width: 25px;
+  height: 25px;
+  padding: 0 0.5em;
 }
