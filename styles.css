@@ -55,21 +55,25 @@ body {
 
 .button-input,
 .operator-input,
-.number-input {
+.number-input,
+.dot-input {
   border-radius: 7%;
   font-size: large;
   border: 0;
 }
 
-.number-input {
+.number-input,
+.dot-input {
   background-color: #323333;
 }
 
-.number-input:hover {
+.number-input:hover,
+.dot-input:hover {
   background-color: #3a3a3b;
 }
 
-.number-input:active {
+.number-input:active,
+.dot-input:active {
   background-color: #28282a;
 }
 
