@@ -5,7 +5,7 @@ let firstOperand;
 let secondOperand;
 let operation;
 let result;
-let wait;
+let shouldWait;
 
 const numberButtons = document.querySelectorAll(".number-input");
 const operatorButtons = document.querySelectorAll(".operator-input");
@@ -39,6 +39,7 @@ clearButton.addEventListener("click", () => clear());
 deleteButton.addEventListener("click", () => deleteValue());
 
 function appendNumber(button) {
+  console.log(displayValue);
   if (shouldClear) {
     clear();
     shouldClear = false;
@@ -47,9 +48,13 @@ function appendNumber(button) {
     resetDisplay();
     shouldReset = false;
   }
+  if (displayValue === "" && button.textContent === "0") {
+    resetDisplay();
+    return;
+  }
   displayValue += button.textContent;
   displayLower.textContent = displayValue;
-  wait = false;
+  shouldWait = false;
 }
 
 function appendDot() {
@@ -61,7 +66,7 @@ function appendDot() {
 
 operatorButtons.forEach((button) =>
   button.addEventListener("click", () => {
-    if (wait) {
+    if (shouldWait) {
       operation = button.textContent;
       displayUpper.textContent = displayValue + " " + operation + " ";
     } else if (firstOperand && operation) {
@@ -73,14 +78,14 @@ operatorButtons.forEach((button) =>
       firstOperand = displayValue;
       secondOperand = null;
       shouldReset = true;
-      wait = true;
+      shouldWait = true;
     }
     if (!firstOperand || !operation) {
       operation = button.textContent;
       firstOperand = displayLower.textContent;
       displayUpper.textContent = displayValue + " " + operation + " ";
       shouldReset = true;
-      wait = true;
+      shouldWait = true;
     }
   })
 );
@@ -148,5 +153,5 @@ help.addEventListener("click", () => {
   console.log("operation: ", operation);
   console.log("first Operand: ", firstOperand);
   console.log("second Operand: ", secondOperand);
-  console.log("wait: ", wait);
+  console.log("shouldWait: ", shouldWait);
 });
