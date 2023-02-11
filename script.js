@@ -34,12 +34,17 @@ function clear() {
 numberButtons.forEach((button) =>
   button.addEventListener("click", () => appendNumber(button))
 );
+operatorButtons.forEach((button) =>
+  button.addEventListener("click", () => assignOperator(button))
+);
 dotButton.addEventListener("click", () => appendDot());
 clearButton.addEventListener("click", () => clear());
 deleteButton.addEventListener("click", () => deleteValue());
+equalButton.addEventListener("click", () => evaluate());
+
+/*-------------------------------------------*/
 
 function appendNumber(button) {
-  console.log(displayValue);
   if (shouldClear) {
     clear();
     shouldClear = false;
@@ -64,33 +69,31 @@ function appendDot() {
   }
 }
 
-operatorButtons.forEach((button) =>
-  button.addEventListener("click", () => {
-    if (shouldWait) {
-      operation = button.textContent;
-      displayUpper.textContent = displayValue + " " + operation + " ";
-    } else if (firstOperand && operation) {
-      secondOperand = displayValue;
-      displayValue = calculate(operation, firstOperand, secondOperand);
-      operation = button.textContent;
-      displayLower.textContent = displayValue;
-      displayUpper.textContent = displayValue + " " + operation;
-      firstOperand = displayValue;
-      secondOperand = null;
-      shouldReset = true;
-      shouldWait = true;
-    }
-    if (!firstOperand || !operation) {
-      operation = button.textContent;
-      firstOperand = displayLower.textContent;
-      displayUpper.textContent = displayValue + " " + operation + " ";
-      shouldReset = true;
-      shouldWait = true;
-    }
-  })
-);
+function assignOperator(button) {
+  if (shouldWait) {
+    operation = button.textContent;
+    displayUpper.textContent = displayValue + " " + operation + " ";
+  } else if (firstOperand && operation) {
+    secondOperand = displayValue;
+    displayValue = roundResult(operation, firstOperand, secondOperand);
+    operation = button.textContent;
+    displayLower.textContent = displayValue;
+    displayUpper.textContent = displayValue + " " + operation;
+    firstOperand = displayValue;
+    secondOperand = null;
+    shouldReset = true;
+    shouldWait = true;
+  }
+  if (!firstOperand || !operation) {
+    operation = button.textContent;
+    firstOperand = displayLower.textContent;
+    displayUpper.textContent = displayValue + " " + operation + " ";
+    shouldReset = true;
+    shouldWait = true;
+  }
+}
 
-equalButton.addEventListener("click", () => {
+function evaluate() {
   if (!operation && !secondOperand) {
   }
   if (!operation) {
@@ -102,14 +105,19 @@ equalButton.addEventListener("click", () => {
     if (!secondOperand) {
       secondOperand = displayValue;
     }
-    displayValue = calculate(operation, firstOperand, secondOperand);
+    displayValue = roundResult(operation, firstOperand, secondOperand);
     displayLower.textContent = displayValue;
     displayUpper.textContent =
       firstOperand + " " + operation + " " + secondOperand + " =";
     firstOperand = displayValue;
     shouldReset = true;
   }
-});
+}
+
+function roundResult(operation, firstOperand, secondOperand) {
+  result = calculate(operation, firstOperand, secondOperand);
+  return Math.floor(result * 1000) / 1000;
+}
 
 function deleteValue() {
   // Removes one digit an updates the display
