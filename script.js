@@ -5,17 +5,19 @@ let firstOperand;
 let secondOperand;
 let operation;
 let result;
+let wait;
 
 const numberButtons = document.querySelectorAll(".number-input");
 const operatorButtons = document.querySelectorAll(".operator-input");
 const deleteButton = document.querySelector("#DEL");
 const clearButton = document.querySelector("#AC");
 const equalButton = document.querySelector("#equal");
+const dotButton = document.querySelector(".dot-input");
 const displayLower = document.querySelector(".screen-lower");
 const displayUpper = document.querySelector(".screen-upper");
 
 function resetDisplay() {
-  // Clear the display before inputing numbers
+  // Clear the display before input numbers
   displayValue = "";
 }
 
@@ -30,43 +32,62 @@ function clear() {
 }
 
 numberButtons.forEach((button) =>
-  button.addEventListener("click", () => {
-    if (shouldClear) {
-      clear();
-      shouldClear = false;
-    }
-    if (displayValue === 0 || shouldReset) {
-      resetDisplay();
-      shouldReset = false;
-    }
-    displayValue += button.textContent;
-    displayLower.textContent = displayValue;
-  })
+  button.addEventListener("click", () => appendNumber(button))
 );
+dotButton.addEventListener("click", () => appendDot());
+clearButton.addEventListener("click", () => clear());
+deleteButton.addEventListener("click", () => deleteValue());
+
+function appendNumber(button) {
+  if (shouldClear) {
+    clear();
+    shouldClear = false;
+  }
+  if (displayValue === 0 || shouldReset) {
+    resetDisplay();
+    shouldReset = false;
+  }
+  displayValue += button.textContent;
+  displayLower.textContent = displayValue;
+  wait = false;
+}
+
+function appendDot() {
+  if (!displayLower.textContent.includes(".")) {
+    displayValue += ".";
+    displayLower.textContent = displayValue;
+  }
+}
 
 operatorButtons.forEach((button) =>
   button.addEventListener("click", () => {
-    if (firstOperand || operation) {
+    if (wait) {
+      operation = button.textContent;
+      displayUpper.textContent = displayValue + " " + operation + " ";
+    } else if (firstOperand && operation) {
       secondOperand = displayValue;
-      result = calculate(operation, firstOperand, secondOperand);
-      displayValue = result;
+      displayValue = calculate(operation, firstOperand, secondOperand);
       operation = button.textContent;
       displayLower.textContent = displayValue;
       displayUpper.textContent = displayValue + " " + operation;
-      firstOperand = result;
+      firstOperand = displayValue;
       secondOperand = null;
       shouldReset = true;
+      wait = true;
     }
     if (!firstOperand || !operation) {
       operation = button.textContent;
-      firstOperand = displayValue;
+      firstOperand = displayLower.textContent;
       displayUpper.textContent = displayValue + " " + operation + " ";
       shouldReset = true;
+      wait = true;
     }
   })
 );
 
 equalButton.addEventListener("click", () => {
+  if (!operation && !secondOperand) {
+  }
   if (!operation) {
     firstOperand = displayValue;
     displayUpper.textContent = firstOperand + " " + " =";
@@ -76,29 +97,22 @@ equalButton.addEventListener("click", () => {
     if (!secondOperand) {
       secondOperand = displayValue;
     }
-    result = calculate(operation, firstOperand, secondOperand);
-    displayValue = result;
+    displayValue = calculate(operation, firstOperand, secondOperand);
     displayLower.textContent = displayValue;
     displayUpper.textContent =
       firstOperand + " " + operation + " " + secondOperand + " =";
-    firstOperand = result;
+    firstOperand = displayValue;
+    shouldReset = true;
   }
 });
 
-clearButton.addEventListener("click", () => clear());
-
-deleteButton.addEventListener("click", () => {
+function deleteValue() {
   // Removes one digit an updates the display
   displayValue = Math.floor(displayValue / 10);
   displayLower.textContent = displayValue;
-});
+}
 
-const help = document.querySelector("#help");
-help.addEventListener("click", () => {
-  console.log("operation: ", operation);
-  console.log("first Operand: ", firstOperand);
-  console.log("second Operand: ", secondOperand);
-});
+/*-------------------------------------------*/
 
 function calculate(op, a, b) {
   a = parseFloat(a);
@@ -125,3 +139,14 @@ function calculate(op, a, b) {
       break;
   }
 }
+
+/*-------------------------------------------*/
+
+const help = document.querySelector("#help");
+help.addEventListener("click", () => {
+  console.log("_______________________________");
+  console.log("operation: ", operation);
+  console.log("first Operand: ", firstOperand);
+  console.log("second Operand: ", secondOperand);
+  console.log("wait: ", wait);
+});
