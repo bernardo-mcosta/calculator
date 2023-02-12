@@ -16,31 +16,28 @@ const dotButton = document.querySelector(".dot-input");
 const displayLower = document.querySelector(".screen-lower");
 const displayUpper = document.querySelector(".screen-upper");
 
-function resetDisplay() {
-  // Clear the display before input numbers
-  displayValue = "";
-}
-
-function clear() {
-  // Erases all operands and return the display to the initial state
-  firstOperand = null;
-  secondOperand = null;
-  operation = null;
-  displayValue = 0;
-  displayUpper.textContent = "";
-  displayLower.textContent = displayValue;
-}
-
 numberButtons.forEach((button) =>
-  button.addEventListener("click", () => appendNumber(button))
+  button.addEventListener("click", () => appendNumber(button.textContent))
 );
 operatorButtons.forEach((button) =>
-  button.addEventListener("click", () => assignOperator(button))
+  button.addEventListener("click", () => assignOperator(button.textContent))
 );
 dotButton.addEventListener("click", () => appendDot());
 clearButton.addEventListener("click", () => clear());
 deleteButton.addEventListener("click", () => deleteValue());
 equalButton.addEventListener("click", () => evaluate());
+
+window.addEventListener("keydown", (e) => {
+  console.log(e.key);
+  if (e.key >= 0 && e.key <= 9) appendNumber(e.key);
+  if (e.key == "+" || e.key == "-") assignOperator(e.key);
+  if (e.key == "*") assignOperator("x");
+  if (e.key == "/") assignOperator("÷");
+  if (e.key == "Enter") evaluate();
+  if (e.key == "Delete") deleteValue();
+  if (e.key == "Backspace") deleteValue();
+  if (e.key == "Escape") clear();
+});
 
 /*-------------------------------------------*/
 
@@ -57,7 +54,7 @@ function appendNumber(button) {
     resetDisplay();
     return;
   }
-  displayValue += button.textContent;
+  displayValue += button;
   displayLower.textContent = displayValue;
   shouldWait = false;
 }
@@ -71,12 +68,12 @@ function appendDot() {
 
 function assignOperator(button) {
   if (shouldWait) {
-    operation = button.textContent;
+    operation = button;
     displayUpper.textContent = displayValue + " " + operation + " ";
   } else if (firstOperand && operation) {
     secondOperand = displayValue;
     displayValue = roundResult(operation, firstOperand, secondOperand);
-    operation = button.textContent;
+    operation = button;
     displayLower.textContent = displayValue;
     displayUpper.textContent = displayValue + " " + operation;
     firstOperand = displayValue;
@@ -85,7 +82,7 @@ function assignOperator(button) {
     shouldWait = true;
   }
   if (!firstOperand || !operation) {
-    operation = button.textContent;
+    operation = button;
     firstOperand = displayLower.textContent;
     displayUpper.textContent = displayValue + " " + operation + " ";
     shouldReset = true;
@@ -125,6 +122,21 @@ function deleteValue() {
   displayLower.textContent = displayValue;
 }
 
+function resetDisplay() {
+  // Clear the display before input numbers
+  displayValue = "";
+}
+
+function clear() {
+  // Erases all operands and return the display to the initial state
+  firstOperand = null;
+  secondOperand = null;
+  operation = null;
+  displayValue = 0;
+  displayUpper.textContent = "";
+  displayLower.textContent = displayValue;
+}
+
 /*-------------------------------------------*/
 
 function calculate(op, a, b) {
@@ -154,12 +166,3 @@ function calculate(op, a, b) {
 }
 
 /*-------------------------------------------*/
-
-const help = document.querySelector("#help");
-help.addEventListener("click", () => {
-  console.log("_______________________________");
-  console.log("operation: ", operation);
-  console.log("first Operand: ", firstOperand);
-  console.log("second Operand: ", secondOperand);
-  console.log("shouldWait: ", shouldWait);
-});
